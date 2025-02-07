@@ -70,9 +70,6 @@ func (e *Env) Get(key string) string {
 	if e == nil {
 		return ""
 	}
-	if e.Items == nil {
-		return ""
-	}
 	for _, j := range e.Items {
 		if j.Key == key {
 			return j.Value
