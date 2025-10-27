@@ -5,14 +5,14 @@ import (
 )
 
 func TestNoPath(t *testing.T) {
-	e := New()
+	e, _ := New()
 	if e.Get("TEST") != "PASS" {
 		t.Fatalf("expected PASS got %s", e.Get("TEST"))
 	}
 }
 
 func TestPath(t *testing.T) {
-	e := New(".env.local")
+	e, _ := New(".env.local")
 	if e.Get("TEST") != "PASS" {
 		t.Fatalf("expected PASS got %s", e.Get("TEST"))
 	}
@@ -25,7 +25,7 @@ func TestPath(t *testing.T) {
 }
 
 func TestDuplicateKeys(t *testing.T) {
-	e := New(".env.dup")
+	e, _ := New(".env.dup")
 	if e.Get("TEST") != "PASS" {
 		t.Fatalf("expected PASS got %s", e.Get("TEST"))
 	}
@@ -35,8 +35,8 @@ func TestDuplicateKeys(t *testing.T) {
 }
 
 func TestKeyDoesNotExist(t *testing.T) {
-	e := New("doesnotexist")
-	if e.Get("TEST") != "" {
-		t.Fatalf("expected \"\" got %s", e.Get("TEST"))
+	_, err := New("doesnotexist")
+	if err == nil {
+		t.Fatalf("expected err, got err == nil")
 	}
 }
