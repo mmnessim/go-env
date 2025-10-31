@@ -1,21 +1,25 @@
 package env
 
 import (
-	"log"
 	"os"
 	"strings"
 )
 
+// Env represents a collection of Items from .env files
 type Env struct {
 	Items []Item
 }
 
+// Item represents key-value pairs
 type Item struct {
 	Key   string
 	Value string
 }
 
-func New(filename ...string) *Env {
+// New reads environment variables from a file and returns an Env instance.
+// If no filename is provided, it defaults to ".env".
+// Returns an error if the file cannot be read.
+func New(filename ...string) (*Env, error) {
 	var rows []Item
 	var f string
 
@@ -27,8 +31,8 @@ func New(filename ...string) *Env {
 
 	file, err := os.ReadFile(f)
 	if err != nil {
-		log.Print(err)
-		return nil
+		//log.Print(err)
+		return nil, err
 	}
 	fileString := string(file)
 
@@ -47,10 +51,11 @@ func New(filename ...string) *Env {
 
 	e := &Env{Items: rows}
 	e.checkDuplicate()
-	return e
+	return e, nil
 }
 
-// If there are multiple keys with different values, use the last value
+// checkDuplicate ensures that if there are multiple keys with different values,
+// the last value is used.
 func (e *Env) checkDuplicate() {
 	var keys []string
 	for _, item := range e.Items {
@@ -59,13 +64,14 @@ func (e *Env) checkDuplicate() {
 	for i, key := range keys {
 		for j := range len(keys) {
 			if key == keys[j] {
-				//fmt.Println("dup")
 				e.Items[i].Value = e.Items[j].Value
 			}
 		}
 	}
 }
 
+// Get returns the value for the given key from the environment.
+// Returns an empty string if the key is not found or Env is nil.
 func (e *Env) Get(key string) string {
 	if e == nil {
 		return ""
