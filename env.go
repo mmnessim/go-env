@@ -39,13 +39,16 @@ func New(filename ...string) (*Env, error) {
 	lines := strings.Split(fileString, "\n")
 
 	for _, line := range lines {
-		pair := strings.Split(line, "=")
+		pair := strings.SplitN(line, "=", 2)
 		if len(pair) != 2 {
 			continue
 		}
 		key := pair[0]
 		value := pair[1]
-		row := Item{Key: key, Value: strings.Trim(value, "\"")}
+		if strings.HasPrefix(value, "\"") && strings.HasSuffix(value, "\"") {
+			value = value[1 : len(value)-1]
+		}
+		row := Item{Key: key, Value: value}
 		rows = append(rows, row)
 	}
 
